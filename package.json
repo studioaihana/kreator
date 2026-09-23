@@ -1,0 +1,25 @@
+{
+  "name": "kreator",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Kreator Studio - open creator workspace (AI video, image, voice, translation) inspired by OpenCreator",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:server": "npm --workspace @kreator/server run dev",
+    "dev:web": "npm --workspace @kreator/web run dev",
+    "build": "npm --workspace @kreator/web run build && npm --workspace @kreator/server run build",
+    "start": "npm --workspace @kreator/server run start",
+    "typecheck": "npm --workspace @kreator/server run typecheck && npm --workspace @kreator/web run typecheck",
+    "clean": "rm -rf apps/web/dist apps/server/dist",
+    "test": "npm --workspace @kreator/server run test && npm --workspace @kreator/web run test",
+    "test:server": "npm --workspace @kreator/server run test",
+    "test:web": "npm --workspace @kreator/web run test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

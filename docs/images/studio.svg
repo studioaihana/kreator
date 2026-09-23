@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="23"/></filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="386"/><feColorMatrix type="saturate" values="0"/></filter>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1d2333"/><stop offset="55%" stop-color="#0d1526"/><stop offset="100%" stop-color="#1d2333"/></linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f5b544" stop-opacity="0.35"/><stop offset="100%" stop-color="#1d2333" stop-opacity="0.9"/></linearGradient>
+    <radialGradient id="vig" cx="50%" cy="45%" r="72%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="0.62"/></radialGradient></defs>
+  <rect width="1280" height="720" fill="url(#sky)"/>
+  <circle cx="52.1" cy="207.8" r="26.6" fill="#f5b544" opacity="0.115" filter="url(#soft)"/><circle cx="294.3" cy="194.0" r="28.3" fill="#f5b544" opacity="0.084" filter="url(#soft)"/><circle cx="361.7" cy="164.3" r="31.6" fill="#f5b544" opacity="0.136" filter="url(#soft)"/><circle cx="171.3" cy="352.1" r="21.7" fill="#f5b544" opacity="0.088" filter="url(#soft)"/><circle cx="541.9" cy="34.0" r="25.2" fill="#f5b544" opacity="0.127" filter="url(#soft)"/><circle cx="404.8" cy="266.1" r="7.0" fill="#f5b544" opacity="0.118" filter="url(#soft)"/><circle cx="813.2" cy="316.8" r="21.9" fill="#f5b544" opacity="0.133" filter="url(#soft)"/><circle cx="592.7" cy="177.4" r="6.9" fill="#f5b544" opacity="0.177" filter="url(#soft)"/><circle cx="31.9" cy="267.2" r="10.9" fill="#f5b544" opacity="0.129" filter="url(#soft)"/><circle cx="874.2" cy="298.3" r="34.7" fill="#f5b544" opacity="0.189" filter="url(#soft)"/><circle cx="593.8" cy="185.5" r="7.7" fill="#f5b544" opacity="0.150" filter="url(#soft)"/><circle cx="1174.3" cy="295.5" r="26.9" fill="#f5b544" opacity="0.139" filter="url(#soft)"/><polygon points="640,-36 78,720 1202,720" fill="#ffe6b8" opacity="0.07" filter="url(#soft)"/><rect x="601" y="310" width="79" height="183" fill="#1d2333"/><path d="M 322 720 Q 350 512 532 465 L 748 465 Q 930 512 958 720 Z" fill="#1d2333"/><ellipse cx="640" cy="245" rx="94" ry="109" fill="#1d2333"/><path d="M 546 221 Q 640 81 734 221 Q 640 165 546 221 Z" fill="#f5b544" opacity="0.85"/><path d="M 732 187 Q 749 245 720 331" stroke="#f5b544" stroke-width="11.2" fill="none" opacity="0.9" stroke-linecap="round"/><path d="M 745 474 Q 911 521 949 720" stroke="#f5b544" stroke-width="10.3" fill="none" opacity="0.7"/><path d="M 574 465 L 640 535 L 706 465" fill="#ffe6b8" opacity="0.16"/><rect x="0" y="648" width="1280" height="72" fill="#1d2333" opacity="0.45" filter="url(#soft)"/>
+  <rect width="1280" height="720" fill="url(#vig)"/>
+  <rect x="0" y="302" width="1280" height="43" fill="#ffe6b8" opacity="0.05" filter="url(#soft)"/>
+  <rect width="1280" height="720" filter="url(#grain)" opacity="0.22" style="mix-blend-mode:overlay"/>
+  
+  <g>
+    <rect x="77" y="50" width="280" height="65" rx="32" fill="#0b0b0f" opacity="0.6"/>
+    <text x="101" y="94" font-family="Inter, system-ui, sans-serif" font-size="27" font-weight="700" letter-spacing="1.5" fill="#f5b544">PRODUCT ADS</text>
+  </g>
+  
+  
+</svg>
