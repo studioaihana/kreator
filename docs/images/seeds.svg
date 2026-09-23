@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="23"/></filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="369"/><feColorMatrix type="saturate" values="0"/></filter>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#111a2e"/><stop offset="55%" stop-color="#05070f"/><stop offset="100%" stop-color="#05070c"/></linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35"/><stop offset="100%" stop-color="#05070c" stop-opacity="0.9"/></linearGradient>
+    <radialGradient id="vig" cx="50%" cy="45%" r="72%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="0.62"/></radialGradient></defs>
+  <rect width="1280" height="720" fill="url(#sky)"/>
+  <ellipse cx="496" cy="378" rx="461" ry="216" fill="#111a2e" opacity="0.95"/><ellipse cx="419" cy="335" rx="256" ry="115" fill="#f472b6" opacity="0.2" filter="url(#soft)"/><path d="M 112 450 q 384 -86 768 14" stroke="#38bdf8" stroke-width="5" fill="none" opacity="0.55"/><circle cx="567" cy="424" r="4" fill="#f472b6" opacity="0.33"/><circle cx="448" cy="331" r="13" fill="#f472b6" opacity="0.25"/><circle cx="705" cy="367" r="14" fill="#f472b6" opacity="0.31"/><circle cx="878" cy="409" r="6" fill="#f472b6" opacity="0.15"/><circle cx="443" cy="370" r="12" fill="#f472b6" opacity="0.22"/><circle cx="225" cy="482" r="16" fill="#f472b6" opacity="0.25"/><circle cx="270" cy="477" r="6" fill="#f472b6" opacity="0.28"/><circle cx="792" cy="444" r="12" fill="#f472b6" opacity="0.24"/><circle cx="207" cy="383" r="7" fill="#f472b6" opacity="0.32"/><circle cx="454" cy="512" r="10" fill="#f472b6" opacity="0.13"/><circle cx="253" cy="452" r="3" fill="#f472b6" opacity="0.29"/><circle cx="746" cy="337" r="5" fill="#f472b6" opacity="0.42"/><circle cx="452" cy="434" r="5" fill="#f472b6" opacity="0.30"/><circle cx="707" cy="311" r="11" fill="#f472b6" opacity="0.13"/><circle cx="329" cy="509" r="12" fill="#f472b6" opacity="0.30"/><circle cx="559" cy="490" r="15" fill="#f472b6" opacity="0.26"/>
+  <rect width="1280" height="720" fill="url(#vig)"/>
+  <rect x="0" y="302" width="1280" height="43" fill="#f472b6" opacity="0.05" filter="url(#soft)"/>
+  <rect width="1280" height="720" filter="url(#grain)" opacity="0.30" style="mix-blend-mode:overlay"/>
+  
+  <g>
+    <rect x="77" y="50" width="364" height="65" rx="32" fill="#0b0b0f" opacity="0.6"/>
+    <text x="101" y="94" font-family="Inter, system-ui, sans-serif" font-size="27" font-weight="700" letter-spacing="1.5" fill="#38bdf8">NARRATIVE SHORT</text>
+  </g>
+  
+  
+</svg>
