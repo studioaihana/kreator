@@ -44,12 +44,16 @@ function esc(text: string): string {
     .replace(/'/g, '&apos;');
 }
 
-function isLight(hex: string): boolean {
+function luminance(hex: string): number {
   const value = hex.replace('#', '');
   const r = parseInt(value.slice(0, 2), 16);
   const g = parseInt(value.slice(2, 4), 16);
   const b = parseInt(value.slice(4, 6), 16);
-  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.6;
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+}
+
+function isLight(hex: string): boolean {
+  return luminance(hex) > 0.6;
 }
 
 function bokeh(rng: () => number, width: number, height: number, colour: string, count: number): string {
@@ -108,7 +112,10 @@ export function renderSceneSvg(spec: SceneSpec): string {
   const rng = createRng(`${seed}:${composition}:${style.id}`);
   const [bg, accent, light, deep] = style.palette as [string, string, string, string];
   const lightMode = isLight(bg);
-  const dark = lightMode ? deep : '#05070c';
+  // `light` is the light source colour, `deep` the shadow colour. Palettes are
+  // normalised here so a mis-ordered palette can never produce a washed out frame.
+  const glow = luminance(light) >= 0.5 ? light : accent;
+  const dark = luminance(deep) < 0.5 ? deep : '#101625';
   const horizon = height * (0.58 + rng() * 0.12);
   const captionFont = spec.language === 'en' ? 28 : 28;
   const captionSize = Math.round((captionFont * width) / 1280) + 6;
@@ -119,7 +126,7 @@ export function renderSceneSvg(spec: SceneSpec): string {
   if (composition === 'landscape') {
     const sunX = width * (0.24 + rng() * 0.5);
     const sunY = horizon - height * (0.12 + rng() * 0.14);
-    scene += `<circle cx="${sunX.toFixed(0)}" cy="${sunY.toFixed(0)}" r="${(height * 0.09).toFixed(0)}" fill="${light}" opacity="0.95" filter="url(#soft)"/>`;
+    scene += `<circle cx="${sunX.toFixed(0)}" cy="${sunY.toFixed(0)}" r="${(height * 0.09).toFixed(0)}" fill="${glow}" opacity="0.95" filter="url(#soft)"/>`;
     scene += `<path d="${ridgePath(rng, width, height, horizon - height * 0.16, height * 0.1, 7)}" fill="${deep}" opacity="0.55"/>`;
     scene += `<path d="${ridgePath(rng, width, height, horizon - height * 0.06, height * 0.08, 9)}" fill="${deep}" opacity="0.75"/>`;
     scene += `<path d="${ridgePath(rng, width, height, horizon + height * 0.04, height * 0.06, 11)}" fill="${dark}" opacity="0.92"/>`;
@@ -129,7 +136,7 @@ export function renderSceneSvg(spec: SceneSpec): string {
     }
   } else if (composition === 'city') {
     const moonX = width * (0.6 + rng() * 0.3);
-    scene += `<circle cx="${moonX.toFixed(0)}" cy="${(height * 0.18).toFixed(0)}" r="${(height * 0.07).toFixed(0)}" fill="${light}" opacity="0.9" filter="url(#soft)"/>`;
+    scene += `<circle cx="${moonX.toFixed(0)}" cy="${(height * 0.18).toFixed(0)}" r="${(height * 0.07).toFixed(0)}" fill="${glow}" opacity="0.9" filter="url(#soft)"/>`;
     let x = -20;
     while (x < width + 20) {
       const w = width * (0.06 + rng() * 0.09);
@@ -153,7 +160,7 @@ export function renderSceneSvg(spec: SceneSpec): string {
     const headY = height * 0.34;
     const shoulderY = headY + headR * 2.35;
     scene += bokeh(rng, width, height * 0.6, accent, 12);
-    scene += `<polygon points="${cx.toFixed(0)},${(headY - headR * 3).toFixed(0)} ${(cx - headR * 6).toFixed(0)},${height} ${(cx + headR * 6).toFixed(0)},${height}" fill="${light}" opacity="0.07" filter="url(#soft)"/>`;
+    scene += `<polygon points="${cx.toFixed(0)},${(headY - headR * 3).toFixed(0)} ${(cx - headR * 6).toFixed(0)},${height} ${(cx + headR * 6).toFixed(0)},${height}" fill="${glow}" opacity="0.07" filter="url(#soft)"/>`;
     // neck
     scene += `<rect x="${(cx - headR * 0.42).toFixed(0)}" y="${(headY + headR * 0.7).toFixed(0)}" width="${(headR * 0.84).toFixed(0)}" height="${(shoulderY - headY - headR * 0.4).toFixed(0)}" fill="${dark}"/>`;
     // shoulders
@@ -165,31 +172,31 @@ export function renderSceneSvg(spec: SceneSpec): string {
     scene += `<path d="M ${(cx + headR * 0.98).toFixed(0)} ${(headY - headR * 0.62).toFixed(0)} Q ${(cx + headR * 1.16).toFixed(0)} ${headY.toFixed(0)} ${(cx + headR * 0.86).toFixed(0)} ${(headY + headR * 0.92).toFixed(0)}" stroke="${accent}" stroke-width="${(headR * 0.12).toFixed(1)}" fill="none" opacity="0.9" stroke-linecap="round"/>`;
     scene += `<path d="M ${(cx + headR * 1.12).toFixed(0)} ${(shoulderY + headR * 0.1).toFixed(0)} Q ${(cx + headR * 2.9).toFixed(0)} ${(shoulderY + headR * 0.6).toFixed(0)} ${(cx + headR * 3.3).toFixed(0)} ${height.toFixed(0)}" stroke="${accent}" stroke-width="${(headR * 0.11).toFixed(1)}" fill="none" opacity="0.7"/>`;
     // collar detail
-    scene += `<path d="M ${(cx - headR * 0.7).toFixed(0)} ${shoulderY.toFixed(0)} L ${cx.toFixed(0)} ${(shoulderY + headR * 0.75).toFixed(0)} L ${(cx + headR * 0.7).toFixed(0)} ${shoulderY.toFixed(0)}" fill="${light}" opacity="0.16"/>`;
+    scene += `<path d="M ${(cx - headR * 0.7).toFixed(0)} ${shoulderY.toFixed(0)} L ${cx.toFixed(0)} ${(shoulderY + headR * 0.75).toFixed(0)} L ${(cx + headR * 0.7).toFixed(0)} ${shoulderY.toFixed(0)}" fill="${glow}" opacity="0.16"/>`;
     scene += `<rect x="0" y="${(height * 0.9).toFixed(0)}" width="${width}" height="${(height * 0.1).toFixed(0)}" fill="${dark}" opacity="0.45" filter="url(#soft)"/>`;
   } else if (composition === 'product') {
     const cx = width / 2;
     const baseY = height * 0.7;
     const podW = width * 0.46;
     scene += bokeh(rng, width, height * 0.6, accent, 10);
-    scene += `<polygon points="${(cx - width * 0.06).toFixed(0)},0 ${(cx + width * 0.06).toFixed(0)},0 ${(cx + podW * 0.6).toFixed(0)},${baseY.toFixed(0)} ${(cx - podW * 0.6).toFixed(0)},${baseY.toFixed(0)}" fill="${light}" opacity="0.12"/>`;
+    scene += `<polygon points="${(cx - width * 0.06).toFixed(0)},0 ${(cx + width * 0.06).toFixed(0)},0 ${(cx + podW * 0.6).toFixed(0)},${baseY.toFixed(0)} ${(cx - podW * 0.6).toFixed(0)},${baseY.toFixed(0)}" fill="${lightMode ? dark : light}" opacity="0.12"/>`;
     scene += `<ellipse cx="${cx.toFixed(0)}" cy="${baseY.toFixed(0)}" rx="${(podW * 0.55).toFixed(0)}" ry="${(height * 0.045).toFixed(0)}" fill="${dark}" opacity="0.9"/>`;
     scene += `<ellipse cx="${cx.toFixed(0)}" cy="${(baseY - height * 0.01).toFixed(0)}" rx="${(podW * 0.5).toFixed(0)}" ry="${(height * 0.032).toFixed(0)}" fill="${accent}" opacity="0.35"/>`;
     const bodyH = height * 0.26;
     const bodyW = width * 0.11;
     scene += `<rect x="${(cx - bodyW / 2).toFixed(0)}" y="${(baseY - bodyH).toFixed(0)}" width="${bodyW.toFixed(0)}" height="${bodyH.toFixed(0)}" rx="${(bodyW * 0.22).toFixed(0)}" fill="${dark}" opacity="0.96"/>`;
-    scene += `<rect x="${(cx - bodyW / 2).toFixed(0)}" y="${(baseY - bodyH).toFixed(0)}" width="${(bodyW * 0.34).toFixed(0)}" height="${bodyH.toFixed(0)}" rx="${(bodyW * 0.2).toFixed(0)}" fill="${light}" opacity="0.22"/>`;
+    scene += `<rect x="${(cx - bodyW / 2).toFixed(0)}" y="${(baseY - bodyH).toFixed(0)}" width="${(bodyW * 0.34).toFixed(0)}" height="${bodyH.toFixed(0)}" rx="${(bodyW * 0.2).toFixed(0)}" fill="${glow}" opacity="0.22"/>`;
     scene += `<rect x="${(cx - bodyW * 0.18).toFixed(0)}" y="${(baseY - bodyH - height * 0.07).toFixed(0)}" width="${(bodyW * 0.36).toFixed(0)}" height="${(height * 0.07).toFixed(0)}" rx="6" fill="${accent}" opacity="0.9"/>`;
-    scene += `<ellipse cx="${cx.toFixed(0)}" cy="${(baseY + height * 0.035).toFixed(0)}" rx="${(bodyW * 0.8).toFixed(0)}" ry="${(height * 0.05).toFixed(0)}" fill="${light}" opacity="0.08" filter="url(#soft)"/>`;
+    scene += `<ellipse cx="${cx.toFixed(0)}" cy="${(baseY + height * 0.035).toFixed(0)}" rx="${(bodyW * 0.8).toFixed(0)}" ry="${(height * 0.05).toFixed(0)}" fill="${glow}" opacity="0.08" filter="url(#soft)"/>`;
   } else if (composition === 'interior') {
     const wx = width * 0.08;
     const wy = height * 0.16;
     const ww = width * 0.36;
     const wh = height * 0.44;
     scene += `<g opacity="0.28" filter="url(#soft)">`;
-    scene += `<polygon points="${wx.toFixed(0)},${wy.toFixed(0)} ${(wx + ww).toFixed(0)},${wy.toFixed(0)} ${(wx + ww * 1.9).toFixed(0)},${height.toFixed(0)} ${wx.toFixed(0)},${height.toFixed(0)}" fill="${light}"/>`;
+    scene += `<polygon points="${wx.toFixed(0)},${wy.toFixed(0)} ${(wx + ww).toFixed(0)},${wy.toFixed(0)} ${(wx + ww * 1.9).toFixed(0)},${height.toFixed(0)} ${wx.toFixed(0)},${height.toFixed(0)}" fill="${glow}"/>`;
     scene += `</g>`;
-    scene += `<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="${ww.toFixed(0)}" height="${wh.toFixed(0)}" fill="${light}" opacity="0.75"/>`;
+    scene += `<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="${ww.toFixed(0)}" height="${wh.toFixed(0)}" fill="${glow}" opacity="0.75"/>`;
     scene += `<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="${ww.toFixed(0)}" height="${wh.toFixed(0)}" fill="none" stroke="${dark}" stroke-width="10" opacity="0.85"/>`;
     scene += `<line x1="${(wx + ww / 2).toFixed(0)}" y1="${wy.toFixed(0)}" x2="${(wx + ww / 2).toFixed(0)}" y2="${(wy + wh).toFixed(0)}" stroke="${dark}" stroke-width="8" opacity="0.85"/>`;
     const deskY = height * 0.74;
@@ -202,25 +209,26 @@ export function renderSceneSvg(spec: SceneSpec): string {
     const cx = width * (0.3 + rng() * 0.4);
     const cy = height * (0.3 + rng() * 0.4);
     const base = Math.min(width, height) * 0.34;
+    const ink = lightMode ? dark : light;
     for (let i = 4; i >= 0; i -= 1) {
       const r = base * (0.4 + i * 0.32);
-      const colour = i % 2 === 0 ? accent : light;
+      const colour = i % 2 === 0 ? accent : ink;
       scene += `<circle cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" r="${r.toFixed(0)}" fill="none" stroke="${colour}" stroke-width="${(6 + i * 2).toFixed(0)}" opacity="${(0.5 - i * 0.07).toFixed(2)}"/>`;
     }
     scene += `<path d="M 0 ${(height * 0.72).toFixed(0)} Q ${(width * 0.3).toFixed(0)} ${(height * 0.52).toFixed(0)} ${(width * 0.58).toFixed(0)} ${(height * 0.72).toFixed(0)} T ${width} ${(height * 0.66).toFixed(0)} L ${width} ${height} L 0 ${height} Z" fill="${dark}" opacity="0.92"/>`;
-    scene += `<circle cx="${(width * 0.78).toFixed(0)}" cy="${(height * 0.26).toFixed(0)}" r="${(base * 0.3).toFixed(0)}" fill="${light}" opacity="0.65" filter="url(#soft)"/>`;
+    scene += `<circle cx="${(width * 0.78).toFixed(0)}" cy="${(height * 0.26).toFixed(0)}" r="${(base * 0.3).toFixed(0)}" fill="${accent}" opacity="0.55" filter="url(#soft)"/>`;
   } else {
     // macro
     const cx = width * (0.3 + rng() * 0.4);
     const cy = height * (0.42 + rng() * 0.2);
     scene += `<ellipse cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" rx="${(width * 0.36).toFixed(0)}" ry="${(height * 0.3).toFixed(0)}" fill="${deep}" opacity="0.95"/>`;
-    scene += `<ellipse cx="${(cx - width * 0.06).toFixed(0)}" cy="${(cy - height * 0.06).toFixed(0)}" rx="${(width * 0.2).toFixed(0)}" ry="${(height * 0.16).toFixed(0)}" fill="${light}" opacity="0.2" filter="url(#soft)"/>`;
+    scene += `<ellipse cx="${(cx - width * 0.06).toFixed(0)}" cy="${(cy - height * 0.06).toFixed(0)}" rx="${(width * 0.2).toFixed(0)}" ry="${(height * 0.16).toFixed(0)}" fill="${glow}" opacity="0.2" filter="url(#soft)"/>`;
     scene += `<path d="M ${(cx - width * 0.3).toFixed(0)} ${(cy + height * 0.1).toFixed(0)} q ${(width * 0.3).toFixed(0)} ${(-height * 0.12).toFixed(0)} ${(width * 0.6).toFixed(0)} ${(height * 0.02).toFixed(0)}" stroke="${accent}" stroke-width="5" fill="none" opacity="0.55"/>`;
     for (let i = 0; i < 16; i += 1) {
       const dx = cx + (rng() - 0.5) * width * 0.6;
       const dy = cy + (rng() - 0.5) * height * 0.4;
       const r = 3 + rng() * 14;
-      scene += `<circle cx="${dx.toFixed(0)}" cy="${dy.toFixed(0)}" r="${r.toFixed(0)}" fill="${light}" opacity="${(0.12 + rng() * 0.3).toFixed(2)}"/>`;
+      scene += `<circle cx="${dx.toFixed(0)}" cy="${dy.toFixed(0)}" r="${r.toFixed(0)}" fill="${glow}" opacity="${(0.12 + rng() * 0.3).toFixed(2)}"/>`;
     }
   }
 
@@ -228,7 +236,7 @@ export function renderSceneSvg(spec: SceneSpec): string {
   extraDefs += `
     <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="${Math.round(Math.min(width, height) * 0.032)}"/></filter>
     <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="${hashString(seed) % 900}"/><feColorMatrix type="saturate" values="0"/></filter>
-    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${lightMode ? light : deep}"/><stop offset="55%" stop-color="${bg}"/><stop offset="100%" stop-color="${dark}"/></linearGradient>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${lightMode ? glow : deep}"/><stop offset="55%" stop-color="${bg}"/><stop offset="100%" stop-color="${dark}"/></linearGradient>
     <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${accent}" stop-opacity="0.35"/><stop offset="100%" stop-color="${dark}" stop-opacity="0.9"/></linearGradient>
     <radialGradient id="vig" cx="50%" cy="45%" r="72%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="${lightMode ? '0.32' : '0.62'}"/></radialGradient>`;
 
@@ -257,7 +265,7 @@ export function renderSceneSvg(spec: SceneSpec): string {
   <rect width="${width}" height="${height}" fill="url(#sky)"/>
   ${scene}
   <rect width="${width}" height="${height}" fill="url(#vig)"/>
-  <rect x="0" y="${(height * 0.42).toFixed(0)}" width="${width}" height="${Math.max(2, height * 0.06).toFixed(0)}" fill="${light}" opacity="0.05" filter="url(#soft)"/>
+  <rect x="0" y="${(height * 0.42).toFixed(0)}" width="${width}" height="${Math.max(2, height * 0.06).toFixed(0)}" fill="${lightMode ? dark : light}" opacity="0.05" filter="url(#soft)"/>
   <rect width="${width}" height="${height}" filter="url(#grain)" opacity="${(grain / 100).toFixed(2)}" style="mix-blend-mode:overlay"/>
   ${kicker}
   ${chapter}
