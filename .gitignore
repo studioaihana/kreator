@@ -1,0 +1,10 @@
+node_modules/
+dist/
+data/
+.kreator-data/
+*.log
+.DS_Store
+.env
+.env.local
+.vite/
+coverage/
